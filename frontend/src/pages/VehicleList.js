@@ -302,7 +302,7 @@ function VehicleList() {
                       variant="outline-secondary" 
                       size="sm"
                       onClick={() => navigate('/engineer')}
-                      title="Go back to Engineer Dashboard"
+                      title="Go back to Hospital Officer Dashboard"
                     >
                       ← Back
                     </Button>
@@ -665,11 +665,11 @@ function VehicleList() {
                 <option value="">Select vehicle type</option>
                 <option value="Ambulance">Ambulance</option>
                 <option value="Van">Van</option>
-                <option value="Car">Car</option>
-                <option value="Bus">Bus</option>
+                <option value="Threewheel">Threewheel</option>
+                <option value="Cab">Cab</option>
                 <option value="Motorcycle">Motorcycle</option>
-                <option value="Truck">Truck</option>
-                <option value="Other">Other</option>
+                <option value="Lorry">Lorry</option>
+                <option value="Jeep">Jeep</option>
               </Form.Select>
             </Form.Group>
             

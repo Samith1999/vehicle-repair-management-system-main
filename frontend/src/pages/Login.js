@@ -6,8 +6,8 @@ import { authAPI, testConnection } from '../services/api';
 import '../App.css';
 
 function Login() {
-    const [email, setEmail] = useState('engineer@hospital.com');
-    const [password, setPassword] = useState('password123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [backendStatus, setBackendStatus] = useState('Checking...');
@@ -93,17 +93,6 @@ function Login() {
         }
     };
 
-    const handleTestLogin = (testEmail, testPassword) => {
-        setEmail(testEmail);
-        setPassword(testPassword);
-        
-        // Auto-submit after brief delay
-        setTimeout(() => {
-            const event = new Event('submit', { bubbles: true, cancelable: true });
-            document.querySelector('form').dispatchEvent(event);
-        }, 100);
-    };
-
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100">
             <Row className="w-100 justify-content-center">
@@ -134,7 +123,7 @@ function Login() {
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Enter email"
+                                        placeholder="Enter your email"
                                         required
                                         disabled={loading}
                                     />
@@ -146,7 +135,7 @@ function Login() {
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Enter password"
+                                        placeholder="Enter your password"
                                         required
                                         disabled={loading}
                                     />
@@ -161,42 +150,10 @@ function Login() {
                                     {loading ? 'Logging in...' : 'Login'}
                                 </Button>
                             </Form>
-                            
-                            <hr className="my-4" />
-                            
-                            <div className="text-center mb-3">
-                                <p className="text-muted">Test Accounts:</p>
-                            </div>
-                            
-                            <div className="d-grid gap-2">
-                                <Button 
-                                    variant="outline-warning"
-                                    onClick={() => handleTestLogin('engineer@hospital.com', 'password123')}
-                                    disabled={loading}
-                                >
-                                    Login as Engineer
-                                </Button>
-                                
-                                <Button 
-                                    variant="outline-info"
-                                    onClick={() => handleTestLogin('officer@rdhs.com', 'password123')}
-                                    disabled={loading}
-                                >
-                                    Login as Subject Officer
-                                </Button>
-                                
-                                <Button 
-                                    variant="outline-success"
-                                    onClick={() => handleTestLogin('rdhs@health.gov', 'password123')}
-                                    disabled={loading}
-                                >
-                                    Login as RDHS
-                                </Button>
-                            </div>
                         </Card.Body>
                         
                         <Card.Footer className="text-center text-muted small">
-                            <div>Backend: http://localhost:5000</div>
+                            <div>Backend: http://192.168.1.38:5000</div>
                             <div>Frontend: http://localhost:3000</div>
                         </Card.Footer>
                     </Card>

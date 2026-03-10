@@ -1,4 +1,4 @@
-# Dependencies
+# Dependencie# Environment variabless
 node_modules/
 npm-debug.log
 npm-debug.log*
@@ -20,7 +20,7 @@ dist/
 *~
 .DS_Store
 
-# Environment variables
+# enviroment variables
 .env
 .env.local
 .env.*.local

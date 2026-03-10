@@ -60,10 +60,7 @@ function EngineerDashboard() {
     vehicle_type: '',
     hospital_name: '',
     inspection_date: new Date().toISOString().split('T')[0],
-    repair_details: '',
-    engineer_signature: '',
-    inspection_findings: '',
-    recommended_repairs: ''
+    repair_details: ''
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -125,10 +122,7 @@ function EngineerDashboard() {
       vehicle_type: '',
       hospital_name: '',
       inspection_date: new Date().toISOString().split('T')[0],
-      repair_details: '',
-      engineer_signature: '',
-      inspection_findings: '',
-      recommended_repairs: ''
+      repair_details: ''
     });
     setError('');
     if (canvasRef.current) {
@@ -197,16 +191,6 @@ function EngineerDashboard() {
       return;
     }
 
-    if (!formData.inspection_findings.trim()) {
-      setError('Please enter inspection findings');
-      return;
-    }
-
-    if (!formData.engineer_signature) {
-      setError('Please sign the inspection report');
-      return;
-    }
-
     try {
       await repairAPI.create({
         registration_number: formData.registration_number,
@@ -216,9 +200,6 @@ function EngineerDashboard() {
         engineer_id: user.id,
         engineer_name: user.name,
         repair_details: formData.repair_details,
-        inspection_findings: formData.inspection_findings,
-        recommended_repairs: formData.recommended_repairs,
-        engineer_signature: formData.engineer_signature,
         status: 'inspection_completed'
       });
 
@@ -302,12 +283,6 @@ function EngineerDashboard() {
   };
 
   const handleDeleteRequest = async (requestId) => {
-    if (user && !user.can_delete_reports) {
-      setError('You do not have permission to delete inspection reports');
-      setTimeout(() => setError(''), 3000);
-      return;
-    }
-
     if (window.confirm('Are you sure you want to delete this inspection report? This action cannot be undone.')) {
       try {
         await repairAPI.delete(requestId);
@@ -371,11 +346,9 @@ Vehicle Information:
 
 Inspection Details:
 - Repair Details: ${report.repair_details}
-- Inspection Findings: ${report.inspection_findings}
-- Recommended Repairs: ${report.recommended_repairs || 'N/A'}
 
 Status: ${report.status}
-Engineer: ${report.engineer_name}
+Hospital Officer: ${report.engineer_name}
 
 ========================================`;
 
@@ -631,16 +604,14 @@ Engineer: ${report.engineer_name}
                             </td>
                             <td>
                               <div className="d-flex gap-2">
-                                {user && user.can_delete_reports && (
-                                  <Button 
-                                    variant="outline-danger" 
-                                    size="sm"
-                                    onClick={() => handleDeleteRequest(request.id)}
-                                    title="Delete Report"
-                                  >
-                                    <FaTrash />
-                                  </Button>
-                                )}
+                                <Button 
+                                  variant="outline-danger" 
+                                  size="sm"
+                                  onClick={() => handleDeleteRequest(request.id)}
+                                  title="Delete Report"
+                                >
+                                  <FaTrash /> Delete
+                                </Button>
                                 
                                 {request.status === 'inspection_completed' && (
                                   <Button 
@@ -772,23 +743,20 @@ Engineer: ${report.engineer_name}
             {/* Vehicle Information Section */}
             <h6 className="mb-3 fw-bold text-primary">Vehicle Information</h6>
             
-            <AutocompleteInput
-              label="Vehicle Registration Number"
-              value={formData.registration_number}
-              onChange={(e) => setFormData({
-                ...formData,
-                registration_number: e.target.value.toUpperCase()
-              })}
-              onSelect={(value) => setFormData({
-                ...formData,
-                registration_number: value.toUpperCase()
-              })}
-              fetchSuggestions={vehicleAPI.getRegistrationSuggestions}
-              placeholder="e.g., WP 1234 AB"
-              debounceDelay={300}
-              minChars={1}
-              required={true}
-            />
+            <Form.Group className="mb-3">
+              <Form.Label>Vehicle Registration Number *</Form.Label>
+              <Form.Control
+                type="text"
+                value={formData.registration_number}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  registration_number: e.target.value.toUpperCase()
+                })}
+                placeholder="e.g., WP 1234 AB"
+                className="custom-form-control"
+                required
+              />
+            </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Vehicle Type *</Form.Label>
@@ -804,10 +772,11 @@ Engineer: ${report.engineer_name}
                 <option value="">Select vehicle type</option>
                 <option value="Ambulance">Ambulance</option>
                 <option value="Van">Van</option>
-                <option value="Car">Car</option>
-                <option value="Truck">Truck</option>
-                <option value="Bus">Bus</option>
+                <option value="Threewheel">Threewheel</option>
+                <option value="Cab">Cab</option>
                 <option value="Motorcycle">Motorcycle</option>
+                <option value="Lorry">Lorry</option>
+                <option value="Jeep">Jeep</option>
               </Form.Select>
             </Form.Group>
 
@@ -864,73 +833,7 @@ Engineer: ${report.engineer_name}
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Inspection Findings *</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={formData.inspection_findings}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  inspection_findings: e.target.value
-                })}
-                placeholder="Record your observations and findings from the inspection..."
-                className="custom-form-control"
-                required
-              />
-            </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Recommended Repairs</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={2}
-                value={formData.recommended_repairs}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  recommended_repairs: e.target.value
-                })}
-                placeholder="List recommended repair actions..."
-                className="custom-form-control"
-              />
-            </Form.Group>
-
-            <hr />
-
-            {/* Engineer Signature Section */}
-            <h6 className="mb-3 fw-bold text-primary">Engineer Signature</h6>
-            <Form.Group className="mb-3">
-              <Form.Label>Draw Your Signature Below *</Form.Label>
-              <div className="border rounded p-2 bg-light">
-                <canvas
-                  ref={canvasRef}
-                  width={400}
-                  height={120}
-                  onMouseDown={startSignature}
-                  onMouseMove={drawSignature}
-                  onMouseUp={endSignature}
-                  onMouseLeave={endSignature}
-                  style={{ border: '2px solid #ddd', cursor: 'crosshair', display: 'block', width: '100%' }}
-                />
-              </div>
-              <small className="text-muted">
-                Sign in the above box using your mouse or touchscreen
-              </small>
-              <div className="mt-2">
-                <Button 
-                  variant="outline-danger" 
-                  size="sm"
-                  onClick={clearSignature}
-                >
-                  Clear Signature
-                </Button>
-              </div>
-              {formData.engineer_signature && (
-                <div className="mt-2 p-2 bg-success bg-opacity-10 rounded">
-                  <small className="text-success">✓ Signature captured</small>
-                </div>
-              )}
-            </Form.Group>
 
             <div className="d-flex justify-content-end gap-2">
               <Button 
@@ -949,7 +852,7 @@ Engineer: ${report.engineer_name}
         <Modal.Footer>
           <Button
             variant="primary" 
-            disabled={!formData.registration_number.trim() || !formData.vehicle_type.trim() || !formData.hospital_name.trim() || !formData.repair_details.trim() || !formData.inspection_findings.trim() || !formData.engineer_signature}
+            disabled={!formData.registration_number.trim() || !formData.vehicle_type.trim() || !formData.hospital_name.trim() || !formData.repair_details.trim()}
             className="btn-custom btn-custom-primary"
             onClick={handleSubmit}
           >
@@ -985,13 +888,13 @@ Engineer: ${report.engineer_name}
               </Alert>
               
               <div className="mb-3">
-                <strong>Inspection Details:</strong>
-                <p className="mt-1 small">{selectedReport.inspection_findings}</p>
+                <strong>Repair Details:</strong>
+                <p className="mt-1 small">{selectedReport.repair_details}</p>
               </div>
               
               <div className="alert alert-warning">
                 <FaExclamationCircle className="me-2" />
-                This report will be sent to the RDHS (Vehicle Subject Officer) for review and approval. The officer will review your inspection findings and approve or request additional information.
+                This report will be sent to the RDHS (Vehicle Subject Officer) for review and approval.
               </div>
             </>
           )}

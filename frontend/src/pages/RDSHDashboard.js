@@ -185,7 +185,7 @@ function RDSHDashboard() {
             <Col md={6}>
               <h6>Repair Information</h6>
               <div className="mb-3">
-                <strong>Engineer:</strong> {request.engineer_name}
+                <strong>Hospital Officer:</strong> {request.engineer_name}
               </div>
               <div className="mb-3">
                 <strong>Inspection Date:</strong> {new Date(request.inspection_date).toLocaleDateString()}
@@ -327,7 +327,7 @@ function RDSHDashboard() {
     }
 
     // Create a Simple CSV Export
-    const headers = ["ID", "Registration", "Type", "Hospital", "Engineer", "Status", "Date"];
+    const headers = ["ID", "Registration", "Type", "Hospital", "Hospital Officer", "Status", "Date"];
     const rows = repairRequests.map(req => [
       req.id,
       req.registration_number,
@@ -728,7 +728,7 @@ function RDSHDashboard() {
               </div>
 
               <div className="mb-3">
-                <strong>Engineer Name:</strong>
+                <strong>Hospital Officer Name:</strong>
                 <p className="mt-1">{selectedRequest.engineer_name}</p>
               </div>
 
@@ -743,7 +743,7 @@ function RDSHDashboard() {
               </div>
 
               <div className="mb-3">
-                <strong>Engineer's Inspection Findings:</strong>
+                <strong>Hospital Officer's Inspection Findings:</strong>
                 <div className="border p-3 rounded bg-light" style={{ whiteSpace: 'pre-wrap' }}>
                   {selectedRequest.inspection_findings}
                 </div>
@@ -765,7 +765,7 @@ function RDSHDashboard() {
 
               <div className="alert alert-warning">
                 <FaExclamationCircle className="me-2" />
-                Review the engineer's findings and officer's assessment, then approve or reject this repair request.
+                Review the hospital officer's findings and officer's assessment, then approve or reject this repair request.
               </div>
             </>
           )}

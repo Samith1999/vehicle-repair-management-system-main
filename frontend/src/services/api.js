@@ -1,7 +1,14 @@
 import axios from 'axios';
 
-// Use your backend URL
-const API_BASE_URL = 'http://localhost:5000/api';
+// Backend URL configuration
+// Configured for localhost development with XAMPP
+const getBackendURL = () => {
+    const backendIP = 'localhost';
+    const port = 5000;
+    return `http://${backendIP}:${port}/api`;
+};
+
+const API_BASE_URL = getBackendURL();
 
 // Create axios instance
 const api = axios.create({
@@ -9,7 +16,7 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 8000
+    timeout: 15000  // Increased timeout for network latency (15 seconds)
 });
 
 // Request interceptor
@@ -68,7 +75,7 @@ export const authAPI = {
 
     deleteUser: (id) =>
         api.delete(`/auth/users/${id}`),
-};
+}; 
 
 // Vehicle API
 export const vehicleAPI = {
@@ -126,7 +133,8 @@ export const repairAPI = {
 // Test connection
 export const testConnection = async () => {
     try {
-        const response = await axios.get('http://localhost:5000/');
+        const backendURL = getBackendURL();
+        const response = await axios.get(`${backendURL}`);
         console.log('✅ Backend connection:', response.data);
         return true;
     } catch (error) {

@@ -4,14 +4,20 @@ const db = require('./config/db');
 
 const app = express();
 
-// Allow all origins for testing
-app.use(cors());
+// Allow all connections from office network
+app.use(cors({
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Import routes
 const authRoutes = require('./routes/auth');
 const vehicleRoutes = require('./routes/vehicle');
-const repairRoutes = require('./routes/repairs');
+const repairRoutes = require('./routes/repairs-clean');
 
 // Use routes
 app.use('/api/auth', authRoutes);
@@ -90,6 +96,15 @@ app.get('/', (req, res) => {
             vehicles: ['GET /api/vehicles', 'GET /api/vehicles/search/:reg'],
             repairs: ['GET /api/repairs', 'GET /api/repairs/stats/summary']
         }
+    });
+});
+
+// API Connection Test endpoint
+app.get('/api', (req, res) => {
+    res.json({ 
+        success: true,
+        message: '✅ Backend API Connected',
+        status: 'running'
     });
 });
 
@@ -500,10 +515,11 @@ app.get('/', (req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Backend Server running on port ${PORT}`);
-    console.log(`🌐 http://localhost:${PORT}`);
-    console.log(`🔗 API Documentation: http://localhost:${PORT}/`);
+    console.log(`🔗 Local Access: http://localhost:${PORT}/`);
+    console.log(`🔗 Network Access: http://192.168.1.38:${PORT}/`);
     console.log('\n📊 Available Data:');
     console.log(`   👤 Users: ${users.length} accounts`);
     console.log(`   🚗 Vehicles: ${vehicles.length} vehicles`);

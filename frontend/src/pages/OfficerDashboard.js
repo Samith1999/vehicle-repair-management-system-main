@@ -323,7 +323,7 @@ function OfficerDashboard() {
           <Col>
             <Card className="custom-card">
               <Card.Header>
-                <h5 className="mb-0">Engineer Inspection Reports</h5>
+                <h5 className="mb-0">Hospital Officer Inspection Reports</h5>
               </Card.Header>
               <Card.Body>
                 {loading ? (
@@ -346,7 +346,7 @@ function OfficerDashboard() {
                           <th>Request ID</th>
                           <th>Vehicle Details</th>
                           <th>Hospital</th>
-                          <th>Engineer</th>
+                          <th>Hospital Officer</th>
                           <th>Inspection Findings</th>
                           <th>Date</th>
                           <th>Status</th>
@@ -545,7 +545,7 @@ function OfficerDashboard() {
         className="custom-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Review Engineer Inspection Report</Modal.Title>
+          <Modal.Title>Review Hospital Officer Inspection Report</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedRequest && (
@@ -561,7 +561,7 @@ function OfficerDashboard() {
               </Alert>
               
               <div className="mb-3">
-                <strong>Engineer Name:</strong>
+                <strong>Hospital Officer Name:</strong>
                 <p className="mt-1">{selectedRequest.engineer_name}</p>
               </div>
               
@@ -648,7 +648,7 @@ function OfficerDashboard() {
               </Alert>
               
               <div className="mb-3">
-                <strong>Engineer Inspection Findings:</strong>
+                <strong>Hospital Officer Inspection Findings:</strong>
                 <p className="mt-1 small">{selectedRequest.inspection_findings}</p>
               </div>
               

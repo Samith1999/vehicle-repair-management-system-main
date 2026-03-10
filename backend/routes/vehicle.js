@@ -1,51 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db');
 
-// ⭐ AUTOCOMPLETE routes MUST be before /:id to avoid conflicts
+// Mock vehicles data
+const vehicles = [
+    { id: 1, registration_number: 'CAB-1234', vehicle_type: 'Ambulance', hospital_name: 'Base Hospital Colombo', current_status: 'operational', created_at: '2024-01-01' },
+    { id: 2, registration_number: 'CAB-5678', vehicle_type: 'Van', hospital_name: 'MOH Office Gampaha', current_status: 'under_repair', created_at: '2024-01-02' },
+    { id: 3, registration_number: 'WP-AB-9012', vehicle_type: 'Car', hospital_name: 'Base Hospital Kalutara', current_status: 'repaired', created_at: '2024-01-03' },
+    { id: 4, registration_number: 'CAB-9011', vehicle_type: 'Ambulance', hospital_name: 'Base Hospital Kandy', current_status: 'operational', created_at: '2024-01-04' }
+];
 
-// AUTOCOMPLETE registration numbers with smart search
-// Matches at beginning (x%) or after space (% x)
-router.get('/autocomplete/registration/:query', async (req, res) => {
-    try {
-        const query = req.params.query.trim().toUpperCase();
-        if (query.length === 0) {
-            return res.json({ success: true, data: [] });
-        }
+// GET all vehicles
+router.get('/', (req, res) => {
+    res.json({
+        success: true,
+        count: vehicles.length,
+        data: vehicles
+    });
+});
 
-        // Smart search: match at beginning OR after space
-        const likePattern = `%${query}%`;
-        
-        const [rows] = await db.execute(
-            `SELECT DISTINCT registration_number 
-             FROM vehicles 
-             WHERE registration_number LIKE ? 
-             ORDER BY registration_number ASC 
-             LIMIT 10`,
-            [likePattern]
-        );
-
-        // Further filter results to match at word boundaries
-        const filtered = rows.filter(row => {
-            const regNum = row.registration_number.toUpperCase();
-            // Match at beginning
-            if (regNum.startsWith(query)) return true;
-            // Match after space
-            return regNum.includes(` ${query}`);
-        });
-
-        res.json({
-            success: true,
-            count: filtered.length,
-            data: filtered.map(row => row.registration_number)
-        });
-    } catch (error) {
-        console.error('Error fetching registration autocomplete:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch registration suggestions'
-        });
+// GET vehicle by ID
+router.get('/:id', (req, res) => {
+    const vehicle = vehicles.find(v => v.id === parseInt(req.params.id));
+    if (!vehicle) {
+        return res.status(404).json({ success: false, error: 'Vehicle not found' });
     }
+    res.json({ success: true, data: vehicle });
+});
+
+// AUTOCOMPLETE registration numbers
+router.get('/autocomplete/registration/:query', (req, res) => {
+    const query = req.params.query.trim().toUpperCase();
+    if (query.length === 0) {
+        return res.json({ success: true, data: [] });
+    }
+    
+    const filtered = vehicles
+        .filter(v => v.registration_number.toUpperCase().includes(query))
+        .map(v => v.registration_number);
+    
+    res.json({
+        success: true,
+        count: filtered.length,
+        data: filtered
+    });
 });
 
 // AUTOCOMPLETE hospital names with smart search
